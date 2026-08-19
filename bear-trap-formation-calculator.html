@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102638">
+  <title>Bear Trap Formation Calculator | Kingshot</title>
+  <style>
+    :root {
+      --ink: #e8f2ef;
+      --muted: #a6b9b9;
+      --paper: #0b1418;
+      --card: #122228;
+      --navy: #071116;
+      --accent: #41b8ae;
+      --accent-dark: #2d938f;
+      --gold: #e7ae54;
+      --line: #294047;
+      --danger: #f3b2ae;
+      --shadow: 0 18px 50px rgba(16, 38, 56, .16);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font: 15px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--accent); }
+    .wrap { width: min(100% - 32px, 980px); margin: 0 auto; }
+    .hero { color: #fff; background: radial-gradient(circle at 90% 0%, #164c50 0, transparent 35%), var(--navy); padding: 56px 0 44px; }
+    .hero header { margin: 0; }
+    .eyebrow, .kicker { margin: 0 0 12px; color: #8dd5d0; font-size: .75rem; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
+    .hero h1 { max-width: 720px; margin-bottom: 14px; font-size: clamp(2.35rem, 9vw, 4.6rem); line-height: .98; letter-spacing: 0; }
+    .hero-copy { max-width: 720px; margin: 0; color: #d4e4e2; font-size: 1.08rem; }
+    .hero-rule { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; color: #fff; font-weight: 800; }
+    .hero-rule span { padding: 8px 12px; border: 1px solid rgba(255,255,255,.22); border-radius: 999px; background: rgba(255,255,255,.08); }
+    .language-switch { margin: 18px 0 0; font-size: .9rem; }
+    main { padding: 28px 0 64px; }
+    .shell { width: min(100% - 32px, 980px); margin: 0 auto; }
+    .shell > header { margin-bottom: 28px; }
+    h1, h2, h3 { margin: 0; line-height: 1.15; }
+    h2 { font-size: clamp(1.5rem, 5vw, 2.1rem); letter-spacing: 0; }
+    h3 { font-size: 1.05rem; }
+    .subtitle { margin: 8px 0 0; color: var(--muted); max-width: 720px; }
+    .layout { display: grid; grid-template-columns: minmax(290px, 360px) 1fr; gap: 14px; align-items: start; }
+    .panel, .result-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+    .panel { padding: 18px; }
+    .panel h2 { margin-bottom: 14px; }
+    .section { padding-top: 16px; margin-top: 16px; border-top: 1px solid var(--line); }
+    .section:first-of-type { padding-top: 0; margin-top: 0; border-top: 0; }
+    label { display: block; font-weight: 700; margin-bottom: 6px; }
+    .hint { color: var(--muted); font-size: .82rem; font-weight: 500; }
+    input {
+      width: 100%; min-height: 40px; border: 1px solid var(--line); border-radius: 8px;
+      padding: 8px 10px; color: var(--ink); background: #0b171c; font: inherit;
+    }
+    input:focus { outline: 3px solid rgba(15,143,146,.18); border-color: var(--accent); }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .troop-row { display: grid; grid-template-columns: 1fr 112px; gap: 10px; align-items: center; margin: 8px 0; }
+    .troop-name { font-weight: 650; }
+    .troop-type { display: block; color: var(--muted); font-size: .78rem; font-weight: 500; }
+    button {
+      width: 100%; border: 0; border-radius: 8px; padding: 11px 14px; color: #071116;
+      background: var(--accent); font: 750 1rem inherit; cursor: pointer;
+    }
+    button:hover { background: var(--accent-dark); }
+    .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+    .metric { padding: 13px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+    .metric-label { color: var(--muted); font-size: .78rem; font-weight: 700; }
+    .metric-value { display: block; margin-top: 3px; font-size: 1.3rem; font-weight: 800; }
+    .notice { padding: 14px 16px; border-left: 5px solid var(--gold); border-radius: 0 14px 14px 0; background: #2b2417; margin-bottom: 18px; }
+    .notice.error { border-left-color: var(--danger); background: #402023; color: #f3b2ae; }
+    .result-card { padding: 20px; margin-bottom: 14px; box-shadow: none; }
+    .result-card header { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 11px; }
+    .pill { color: #b7f0cf; background: #173c32; border-radius: 999px; padding: 3px 9px; font-size: .76rem; font-weight: 800; white-space: nowrap; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+    th { color: #d7ebe5; background: #18363a; font-size: .78rem; text-transform: uppercase; letter-spacing: 0; }
+    td:last-child, th:last-child { text-align: right; }
+    tfoot td { color: var(--ink); font-weight: 800; border-bottom: 0; padding-top: 10px; }
+    .empty { color: var(--muted); padding: 12px 0 2px; }
+    .remaining table { font-size: .9rem; }
+    .small { color: var(--muted); font-size: .82rem; }
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 24px, 980px); }
+      .hero { padding: 42px 0 34px; }
+      .layout { grid-template-columns: 1fr; }
+      .summary { grid-template-columns: 1fr 1fr; }
+      .summary .metric:last-child { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Kingshot Bear Trap</p>
+      <h1>Build the right rallies.<br>Use every troop well.</h1>
+      <p class="hero-copy">Enter your troop inventory and rally limits. The calculator prioritizes frequent rallies, keeps them identical whenever possible, and assigns the remaining troops to your starter rally.</p>
+      <div class="hero-rule" aria-label="Formation rules"><span>Frequent rallies first</span><span>Identical formations</span><span>Exact troop counts</span></div>
+      <p class="language-switch"><a href="bear-trap-formation-calculator-ko.html" lang="ko">한국어로 보기</a></p>
+    </div>
+  </header>
+
+  <main class="shell">
+    <header>
+      <p class="kicker">Formation builder</p>
+      <h2>Set your limits and inventory.</h2>
+      <p class="subtitle">The default package is six 85K frequent rallies plus a 113K starter rally.</p>
+    </header>
+    <div class="layout">
+      <section class="panel" aria-label="Formation inputs">
+        <h2>Formation settings</h2>
+        <div class="section">
+          <div class="field-grid">
+            <div>
+              <label for="rallyCount">Frequent rallies</label>
+              <input id="rallyCount" type="number" min="1" step="1" value="6">
+            </div>
+            <div>
+              <label for="rallySize">Max troops per rally</label>
+              <input id="rallySize" type="number" min="1" step="1" value="85000">
+            </div>
+          </div>
+          <div style="margin-top:12px">
+            <label for="starterSize">Starter rally target <span class="hint">(used less often)</span></label>
+            <input id="starterSize" type="number" min="0" step="1" value="113000">
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Troop inventory</h3>
+          <p class="small">Enter the full “All” tab count, including troops currently out of town.</p>
+          <div id="troopInputs"></div>
+        </div>
+        <button id="calculate" type="button">Calculate formations</button>
+      </section>
+
+      <section aria-live="polite">
+        <div id="messages"></div>
+        <div id="summary" class="summary"></div>
+        <div id="results"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const troopDefs = [
+      ["Supreme Infantry", "Infantry", "SI"],
+      ["Supreme Cavalry", "Cavalry", "SC"],
+      ["Supreme Archer", "Archer", "SA"],
+      ["Elite Infantry", "Infantry", "EI"],
+      ["Elite Cavalry", "Cavalry", "EC"],
+      ["Elite Archer", "Archer", "EA"],
+      ["Brave Cavalry", "Cavalry", "BC"],
+      ["Brave Archer", "Archer", "BA"],
+      ["Hardy Infantry", "Infantry", "HI"],
+      ["Hardy Cavalry", "Cavalry", "HC"],
+      ["Hardy Archer", "Archer", "HA"],
+      ["Rookie Infantry", "Infantry", "RI"]
+    ];
+
+    const defaults = {
+      SI: 173868, SC: 158891, SA: 185727, EI: 743, EC: 2156, EA: 2156,
+      BC: 0, BA: 0, HI: 375, HC: 275, HA: 275, RI: 0
+    };
+
+    const format = n => Number(n).toLocaleString("en-US");
+    const byId = id => document.getElementById(id);
+
+    function renderInputs() {
+      byId("troopInputs").innerHTML = troopDefs.map(([name, type, key]) => `
+        <div class="troop-row">
+          <div class="troop-name">${name}<span class="troop-type">${type}</span></div>
+          <input aria-label="${name}" data-key="${key}" type="number" min="0" step="1" value="${defaults[key] || 0}">
+        </div>
+      `).join("");
+    }
+
+    function readInventory() {
+      const inventory = {};
+      document.querySelectorAll("[data-key]").forEach(input => {
+        inventory[input.dataset.key] = Math.max(0, Math.floor(Number(input.value) || 0));
+      });
+      return inventory;
+    }
+
+    function sum(obj) { return Object.values(obj).reduce((a, b) => a + b, 0); }
+
+    function allocateByLevel(total, keys, inventory) {
+      const allocation = {};
+      let remaining = total;
+      for (const key of keys) {
+        const amount = Math.min(inventory[key] || 0, remaining);
+        allocation[key] = amount;
+        remaining -= amount;
+      }
+      return { allocation, remaining };
+    }
+
+    function addRow(rows, key, amount) {
+      if (amount > 0) rows.push({ key, amount });
+    }
+
+    function buildPlan() {
+      const inventory = readInventory();
+      const rallyCount = Math.max(1, Math.floor(Number(byId("rallyCount").value) || 1));
+      const requestedRallySize = Math.max(1, Math.floor(Number(byId("rallySize").value) || 1));
+      const requestedStarter = Math.max(0, Math.floor(Number(byId("starterSize").value) || 0));
+      const total = sum(inventory);
+      const messages = [];
+      let rallySize = requestedRallySize;
+      let starterSize = requestedStarter;
+
+      const maxFrequentSize = Math.floor(total / rallyCount);
+      if (rallySize > maxFrequentSize) {
+        rallySize = maxFrequentSize;
+        messages.push(`The requested frequent rally size was too large for the inventory, so it was reduced to ${format(rallySize)}.`);
+      }
+
+      const frequentTotal = rallyCount * rallySize;
+      const availableForStarter = Math.max(0, total - frequentTotal);
+      if (starterSize > availableForStarter) {
+        starterSize = availableForStarter;
+        messages.push(`The starter target was reduced to ${format(starterSize)} because frequent rallies are prioritized.`);
+      }
+
+      const used = Object.fromEntries(Object.keys(inventory).map(key => [key, 0]));
+      const archerKeys = ["SA", "EA", "BA", "HA"];
+      const infantryKeys = ["SI", "EI", "HI", "RI"];
+      const cavalryKeys = ["SC", "EC", "BC", "HC"];
+      const archersAvailable = archerKeys.reduce((n, key) => n + inventory[key], 0);
+      const archersForFrequent = Math.min(archersAvailable, Math.floor(frequentTotal * 0.5));
+      const nonArchers = frequentTotal - archersForFrequent;
+      const infantryAvailable = infantryKeys.reduce((n, key) => n + inventory[key], 0);
+      const cavalryAvailable = cavalryKeys.reduce((n, key) => n + inventory[key], 0);
+      const nonArcherAvailable = infantryAvailable + cavalryAvailable;
+      const infantryForFrequent = Math.min(infantryAvailable, Math.round(nonArchers * infantryAvailable / Math.max(1, nonArcherAvailable)));
+      const cavalryForFrequent = nonArchers - infantryForFrequent;
+      const classKeys = { Archer: archerKeys, Infantry: infantryKeys, Cavalry: cavalryKeys };
+      const perArcher = Math.min(Math.floor(archersAvailable / rallyCount), Math.floor(rallySize * 0.5));
+      const perNonArcher = rallySize - perArcher;
+      let perInfantry = Math.min(Math.floor(infantryAvailable / rallyCount), Math.floor(perNonArcher * infantryAvailable / Math.max(1, nonArcherAvailable)));
+      let perCavalry = perNonArcher - perInfantry;
+      if (perCavalry * rallyCount > cavalryAvailable) {
+        perCavalry = Math.floor(cavalryAvailable / rallyCount);
+        perInfantry = perNonArcher - perCavalry;
+      }
+      const frequentClass = {
+        Archer: perArcher * rallyCount,
+        Infantry: perInfantry * rallyCount,
+        Cavalry: perCavalry * rallyCount
+      };
+      const perRally = { Archer: perArcher, Infantry: perInfantry, Cavalry: perCavalry };
+      const frequentRows = [];
+
+      for (const troopClass of ["Archer", "Infantry", "Cavalry"]) {
+        const totalForClass = perRally[troopClass];
+        const { allocation } = allocateByLevel(totalForClass, classKeys[troopClass], inventory);
+        for (const [key, amount] of Object.entries(allocation)) {
+          used[key] += amount * rallyCount;
+          addRow(frequentRows, key, amount);
+        }
+      }
+
+      const rowsForStarter = [];
+      const remaining = Object.fromEntries(Object.keys(inventory).map(key => [key, inventory[key] - used[key]]));
+      const starterTotal = Math.min(starterSize, sum(remaining));
+      let starterLeft = starterTotal;
+      for (const troopClass of ["Archer", "Infantry", "Cavalry"]) {
+        const keys = classKeys[troopClass];
+        const classRemaining = keys.reduce((n, key) => n + remaining[key], 0);
+        const classTarget = Math.min(classRemaining, starterLeft);
+        const { allocation } = allocateByLevel(classTarget, keys, remaining);
+        for (const [key, amount] of Object.entries(allocation)) {
+          remaining[key] -= amount;
+          addRow(rowsForStarter, key, amount);
+        }
+        starterLeft -= classTarget;
+      }
+
+      return { inventory, rallyCount, rallySize, requestedRallySize, starterSize, requestedStarter, total, frequentRows, frequentClass, rowsForStarter, remaining, starterTotal, messages };
+    }
+
+    function nameFor(key) { return troopDefs.find(row => row[2] === key)?.[0] || key; }
+    function typeFor(key) { return troopDefs.find(row => row[2] === key)?.[1] || ""; }
+
+    function table(rows, total) {
+      if (!rows.length) return `<div class="empty">No troops assigned.</div>`;
+      return `<table><thead><tr><th>Troop level</th><th>Type</th><th>Troops</th></tr></thead><tbody>${rows.map(row => `<tr><td>${nameFor(row.key)}</td><td>${typeFor(row.key)}</td><td>${format(row.amount)}</td></tr>`).join("")}</tbody><tfoot><tr><td colspan="2">Total</td><td>${format(total)}</td></tr></tfoot></table>`;
+    }
+
+    function render() {
+      const plan = buildPlan();
+      const frequentPerRally = plan.frequentRows.map(row => ({ key: row.key, amount: row.amount }));
+      const frequentTotal = plan.rallyCount * plan.rallySize;
+      const deployed = frequentTotal + plan.starterTotal;
+      const leftover = sum(plan.remaining);
+
+      byId("messages").innerHTML = plan.messages.map(message => `<div class="notice">${message}</div>`).join("");
+      byId("summary").innerHTML = `
+        <div class="metric"><span class="metric-label">Inventory</span><span class="metric-value">${format(plan.total)}</span></div>
+        <div class="metric"><span class="metric-label">Deployed</span><span class="metric-value">${format(deployed)}</span></div>
+        <div class="metric"><span class="metric-label">Remaining</span><span class="metric-value">${format(leftover)}</span></div>
+      `;
+
+      const frequentNote = `<p class="small">Every frequent rally uses the same troop-level counts. Any troops not needed for those rallies remain available to the starter.</p>`;
+      const frequentCards = `<article class="result-card"><header><h2>${plan.rallyCount} identical frequent rallies</h2><span class="pill">${format(plan.rallySize)} each</span></header>${frequentNote}${table(frequentPerRally, sum(frequentPerRally))}</article>`;
+      const starterCard = `<article class="result-card"><header><h2>Starter rally</h2><span class="pill">${format(plan.starterTotal)}</span></header>${table(plan.rowsForStarter, plan.starterTotal)}</article>`;
+      const leftoverRows = Object.entries(plan.remaining).filter(([, amount]) => amount > 0).map(([key, amount]) => ({ key, amount }));
+      const leftoverCard = `<article class="result-card remaining"><header><h2>Unassigned troops</h2><span class="pill">${format(leftover)}</span></header>${table(leftoverRows, leftover)}</article>`;
+      byId("results").innerHTML = frequentCards + starterCard + leftoverCard;
+    }
+
+    renderInputs();
+    document.querySelectorAll("input").forEach(input => input.addEventListener("input", render));
+    byId("calculate").addEventListener("click", render);
+    render();
+  </script>
+</body>
+</html>
