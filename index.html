@@ -311,7 +311,7 @@
       `;
 
       const frequentNote = `<p class="small">Every frequent rally uses the same troop-level counts. Any troops not needed for those rallies remain available to the starter.</p>`;
-      const frequentCards = `<article class="result-card"><header><h2>${plan.rallyCount} identical frequent rallies</h2><span class="pill">${format(plan.rallySize)} each</span></header>${frequentNote}${table(frequentPerRally, sum(frequentPerRally))}</article>`;
+      const frequentCards = `<article class="result-card"><header><h2>${plan.rallyCount} identical frequent rallies</h2><span class="pill">${format(plan.rallySize)} each</span></header>${frequentNote}${table(frequentPerRally, frequentPerRally.reduce((total, row) => total + row.amount, 0))}</article>`;
       const starterCard = `<article class="result-card"><header><h2>Starter rally</h2><span class="pill">${format(plan.starterTotal)}</span></header>${table(plan.rowsForStarter, plan.starterTotal)}</article>`;
       const leftoverRows = Object.entries(plan.remaining).filter(([, amount]) => amount > 0).map(([key, amount]) => ({ key, amount }));
       const leftoverCard = `<article class="result-card remaining"><header><h2>Unassigned troops</h2><span class="pill">${format(leftover)}</span></header>${table(leftoverRows, leftover)}</article>`;

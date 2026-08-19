@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#102638">
-  <link rel="alternate" hreflang="en" href="bear-trap-formation-calculator.html">
+  <link rel="alternate" hreflang="en" href="index.html">
   <title>곰 덫 편성 계산기 | Kingshot</title>
   <style>
     :root {
@@ -313,7 +313,7 @@
       `;
 
       const frequentNote = `<p class="small">모든 자주 사용하는 집결은 같은 병력 레벨별 수를 사용합니다. 필요한 병력만 배치하고 나머지는 시작 집결에 남겨둡니다.</p>`;
-      const frequentCards = `<article class="result-card"><header><h2>동일한 자주 사용하는 집결 ${plan.rallyCount}개</h2><span class="pill">각 ${format(plan.rallySize)}</span></header>${frequentNote}${table(frequentPerRally, sum(frequentPerRally))}</article>`;
+      const frequentCards = `<article class="result-card"><header><h2>동일한 자주 사용하는 집결 ${plan.rallyCount}개</h2><span class="pill">각 ${format(plan.rallySize)}</span></header>${frequentNote}${table(frequentPerRally, frequentPerRally.reduce((total, row) => total + row.amount, 0))}</article>`;
       const starterCard = `<article class="result-card"><header><h2>시작 집결</h2><span class="pill">${format(plan.starterTotal)}</span></header>${table(plan.rowsForStarter, plan.starterTotal)}</article>`;
       const leftoverRows = Object.entries(plan.remaining).filter(([, amount]) => amount > 0).map(([key, amount]) => ({ key, amount }));
       const leftoverCard = `<article class="result-card remaining"><header><h2>미배정 병력</h2><span class="pill">${format(leftover)}</span></header>${table(leftoverRows, leftover)}</article>`;
