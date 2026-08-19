@@ -1,11 +1,10 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#102638">
-  <link rel="alternate" hreflang="en" href="bear-trap-formation-calculator.html">
-  <title>곰 덫 편성 계산기 | Kingshot</title>
+  <title>Bear Trap Formation Calculator | Kingshot</title>
   <style>
     :root {
       --ink: #e8f2ef;
@@ -26,8 +25,7 @@
       margin: 0;
       color: var(--ink);
       background: var(--paper);
-      font: 15px/1.65 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      word-break: keep-all;
+      font: 15px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
     a { color: var(--accent); }
     .wrap { width: min(100% - 32px, 980px); margin: 0 auto; }
@@ -102,46 +100,46 @@
 <body>
   <header class="hero">
     <div class="wrap">
-      <p class="eyebrow">Kingshot 곰 덫</p>
-      <h1>좋은 집결을 만들고,<br>병력을 제대로 쓰세요.</h1>
-      <p class="hero-copy">현재 병력과 집결 한도를 입력하세요. 자주 사용하는 집결을 먼저 배분하고, 가능한 한 동일한 편성을 유지한 뒤 남은 병력을 시작 집결에 배정합니다.</p>
-      <div class="hero-rule" aria-label="편성 규칙"><span>자주 쓰는 집결 우선</span><span>동일한 편성</span><span>정확한 병력 수</span></div>
-      <p class="language-switch"><a href="index.html" lang="en">View in English</a></p>
+      <p class="eyebrow">Kingshot Bear Trap</p>
+      <h1>Build the right rallies.<br>Use every troop well.</h1>
+      <p class="hero-copy">Enter your troop inventory and rally limits. The calculator prioritizes frequent rallies, keeps them identical whenever possible, and assigns the remaining troops to your starter rally.</p>
+      <div class="hero-rule" aria-label="Formation rules"><span>Frequent rallies first</span><span>Identical formations</span><span>Exact troop counts</span></div>
+      <p class="language-switch"><a href="bear-trap-formation-calculator-ko.html" lang="ko">한국어로 보기</a></p>
     </div>
   </header>
 
   <main class="shell">
     <header>
-      <p class="kicker">편성 생성기</p>
-      <h2>한도와 병력을 설정하세요.</h2>
-      <p class="subtitle">기본 설정은 85K 집결 6개와 113K 시작 집결 1개입니다.</p>
+      <p class="kicker">Formation builder</p>
+      <h2>Set your limits and inventory.</h2>
+      <p class="subtitle">The default package is six 85K frequent rallies plus a 113K starter rally.</p>
     </header>
     <div class="layout">
       <section class="panel" aria-label="Formation inputs">
-        <h2>편성 설정</h2>
+        <h2>Formation settings</h2>
         <div class="section">
           <div class="field-grid">
             <div>
-              <label for="rallyCount">자주 사용하는 집결 수</label>
+              <label for="rallyCount">Frequent rallies</label>
               <input id="rallyCount" type="number" min="1" step="1" value="6">
             </div>
             <div>
-              <label for="rallySize">집결당 최대 병력</label>
+              <label for="rallySize">Max troops per rally</label>
               <input id="rallySize" type="number" min="1" step="1" value="85000">
             </div>
           </div>
           <div style="margin-top:12px">
-            <label for="starterSize">시작 집결 목표 <span class="hint">(사용 빈도 낮음)</span></label>
+            <label for="starterSize">Starter rally target <span class="hint">(used less often)</span></label>
             <input id="starterSize" type="number" min="0" step="1" value="113000">
           </div>
         </div>
 
         <div class="section">
-          <h3>병력 보유량</h3>
-          <p class="small">현재 외출 중인 병력을 포함해 “전체” 탭의 수치를 입력하세요.</p>
+          <h3>Troop inventory</h3>
+          <p class="small">Enter the full “All” tab count, including troops currently out of town.</p>
           <div id="troopInputs"></div>
         </div>
-        <button id="calculate" type="button">편성 계산</button>
+        <button id="calculate" type="button">Calculate formations</button>
       </section>
 
       <section aria-live="polite">
@@ -154,18 +152,18 @@
 
   <script>
     const troopDefs = [
-      ["최상급 보병", "보병", "SI"],
-      ["최상급 기병", "기병", "SC"],
-      ["최상급 궁병", "궁병", "SA"],
-      ["정예 보병", "보병", "EI"],
-      ["정예 기병", "기병", "EC"],
-      ["정예 궁병", "궁병", "EA"],
-      ["용맹 기병", "기병", "BC"],
-      ["용맹 궁병", "궁병", "BA"],
-      ["강인 보병", "보병", "HI"],
-      ["강인 기병", "기병", "HC"],
-      ["강인 궁병", "궁병", "HA"],
-      ["신병 보병", "보병", "RI"]
+      ["Supreme Infantry", "Infantry", "SI"],
+      ["Supreme Cavalry", "Cavalry", "SC"],
+      ["Supreme Archer", "Archer", "SA"],
+      ["Elite Infantry", "Infantry", "EI"],
+      ["Elite Cavalry", "Cavalry", "EC"],
+      ["Elite Archer", "Archer", "EA"],
+      ["Brave Cavalry", "Cavalry", "BC"],
+      ["Brave Archer", "Archer", "BA"],
+      ["Hardy Infantry", "Infantry", "HI"],
+      ["Hardy Cavalry", "Cavalry", "HC"],
+      ["Hardy Archer", "Archer", "HA"],
+      ["Rookie Infantry", "Infantry", "RI"]
     ];
 
     const defaults = {
@@ -223,14 +221,14 @@
       const maxFrequentSize = Math.floor(total / rallyCount);
       if (rallySize > maxFrequentSize) {
         rallySize = maxFrequentSize;
-        messages.push(`보유 병력에 비해 자주 사용하는 집결 규모가 너무 커서 ${format(rallySize)}명으로 줄였습니다.`);
+        messages.push(`The requested frequent rally size was too large for the inventory, so it was reduced to ${format(rallySize)}.`);
       }
 
       const frequentTotal = rallyCount * rallySize;
       const availableForStarter = Math.max(0, total - frequentTotal);
       if (starterSize > availableForStarter) {
         starterSize = availableForStarter;
-        messages.push(`자주 사용하는 집결을 우선 배정했기 때문에 시작 집결 목표를 ${format(starterSize)}명으로 줄였습니다.`);
+        messages.push(`The starter target was reduced to ${format(starterSize)} because frequent rallies are prioritized.`);
       }
 
       const used = Object.fromEntries(Object.keys(inventory).map(key => [key, 0]));
@@ -295,7 +293,7 @@
 
     function table(rows, total) {
       if (!rows.length) return `<div class="empty">No troops assigned.</div>`;
-      return `<table><thead><tr><th>병력 레벨</th><th>종류</th><th>병력 수</th></tr></thead><tbody>${rows.map(row => `<tr><td>${nameFor(row.key)}</td><td>${typeFor(row.key)}</td><td>${format(row.amount)}</td></tr>`).join("")}</tbody><tfoot><tr><td colspan="2">합계</td><td>${format(total)}</td></tr></tfoot></table>`;
+      return `<table><thead><tr><th>Troop level</th><th>Type</th><th>Troops</th></tr></thead><tbody>${rows.map(row => `<tr><td>${nameFor(row.key)}</td><td>${typeFor(row.key)}</td><td>${format(row.amount)}</td></tr>`).join("")}</tbody><tfoot><tr><td colspan="2">Total</td><td>${format(total)}</td></tr></tfoot></table>`;
     }
 
     function render() {
@@ -307,16 +305,16 @@
 
       byId("messages").innerHTML = plan.messages.map(message => `<div class="notice">${message}</div>`).join("");
       byId("summary").innerHTML = `
-        <div class="metric"><span class="metric-label">전체 병력</span><span class="metric-value">${format(plan.total)}</span></div>
-        <div class="metric"><span class="metric-label">배치 병력</span><span class="metric-value">${format(deployed)}</span></div>
-        <div class="metric"><span class="metric-label">남은 병력</span><span class="metric-value">${format(leftover)}</span></div>
+        <div class="metric"><span class="metric-label">Inventory</span><span class="metric-value">${format(plan.total)}</span></div>
+        <div class="metric"><span class="metric-label">Deployed</span><span class="metric-value">${format(deployed)}</span></div>
+        <div class="metric"><span class="metric-label">Remaining</span><span class="metric-value">${format(leftover)}</span></div>
       `;
 
-      const frequentNote = `<p class="small">모든 자주 사용하는 집결은 같은 병력 레벨별 수를 사용합니다. 필요한 병력만 배치하고 나머지는 시작 집결에 남겨둡니다.</p>`;
-      const frequentCards = `<article class="result-card"><header><h2>동일한 자주 사용하는 집결 ${plan.rallyCount}개</h2><span class="pill">각 ${format(plan.rallySize)}</span></header>${frequentNote}${table(frequentPerRally, sum(frequentPerRally))}</article>`;
-      const starterCard = `<article class="result-card"><header><h2>시작 집결</h2><span class="pill">${format(plan.starterTotal)}</span></header>${table(plan.rowsForStarter, plan.starterTotal)}</article>`;
+      const frequentNote = `<p class="small">Every frequent rally uses the same troop-level counts. Any troops not needed for those rallies remain available to the starter.</p>`;
+      const frequentCards = `<article class="result-card"><header><h2>${plan.rallyCount} identical frequent rallies</h2><span class="pill">${format(plan.rallySize)} each</span></header>${frequentNote}${table(frequentPerRally, sum(frequentPerRally))}</article>`;
+      const starterCard = `<article class="result-card"><header><h2>Starter rally</h2><span class="pill">${format(plan.starterTotal)}</span></header>${table(plan.rowsForStarter, plan.starterTotal)}</article>`;
       const leftoverRows = Object.entries(plan.remaining).filter(([, amount]) => amount > 0).map(([key, amount]) => ({ key, amount }));
-      const leftoverCard = `<article class="result-card remaining"><header><h2>미배정 병력</h2><span class="pill">${format(leftover)}</span></header>${table(leftoverRows, leftover)}</article>`;
+      const leftoverCard = `<article class="result-card remaining"><header><h2>Unassigned troops</h2><span class="pill">${format(leftover)}</span></header>${table(leftoverRows, leftover)}</article>`;
       byId("results").innerHTML = frequentCards + starterCard + leftoverCard;
     }
 
