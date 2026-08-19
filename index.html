@@ -102,8 +102,8 @@
     <div class="wrap">
       <p class="eyebrow">Kingshot Bear Trap</p>
       <h1>Build the right rallies.<br>Use every troop well.</h1>
-      <p class="hero-copy">Enter your troop inventory and rally limits. The calculator prioritizes frequent rallies, keeps them identical whenever possible, and assigns the remaining troops to your starter rally.</p>
-      <div class="hero-rule" aria-label="Formation rules"><span>Frequent rallies first</span><span>Identical formations</span><span>Exact troop counts</span></div>
+      <p class="hero-copy">Enter your troop inventory and rally limits. The calculator prioritizes frequent rallies, targets 50% archers, 30% infantry, and 20% cavalry when available, and assigns the remaining troops to your starter rally.</p>
+      <div class="hero-rule" aria-label="Formation rules"><span>50% archers</span><span>30% infantry</span><span>20% cavalry</span></div>
       <p class="language-switch"><a href="bear-trap-formation-calculator-ko.html" lang="ko">한국어로 보기</a></p>
     </div>
   </header>
@@ -236,17 +236,28 @@
       const infantryKeys = ["SI", "EI", "HI", "RI"];
       const cavalryKeys = ["SC", "EC", "BC", "HC"];
       const archersAvailable = archerKeys.reduce((n, key) => n + inventory[key], 0);
-      const archersForFrequent = Math.min(archersAvailable, Math.floor(frequentTotal * 0.5));
-      const nonArchers = frequentTotal - archersForFrequent;
       const infantryAvailable = infantryKeys.reduce((n, key) => n + inventory[key], 0);
       const cavalryAvailable = cavalryKeys.reduce((n, key) => n + inventory[key], 0);
       const nonArcherAvailable = infantryAvailable + cavalryAvailable;
-      const infantryForFrequent = Math.min(infantryAvailable, Math.round(nonArchers * infantryAvailable / Math.max(1, nonArcherAvailable)));
-      const cavalryForFrequent = nonArchers - infantryForFrequent;
+      const archersForFrequent = Math.min(archersAvailable, Math.floor(frequentTotal * 0.5));
+      const nonArchers = frequentTotal - archersForFrequent;
+      const targetInfantry = Math.floor(frequentTotal * 0.3);
+      const targetCavalry = frequentTotal - Math.floor(frequentTotal * 0.5) - targetInfantry;
+      let infantryForFrequent = Math.min(infantryAvailable, targetInfantry);
+      let cavalryForFrequent = Math.min(cavalryAvailable, targetCavalry);
+      let classDeficit = frequentTotal - archersForFrequent - infantryForFrequent - cavalryForFrequent;
+      if (classDeficit > 0) {
+        const infantryCapacity = Math.max(0, infantryAvailable - infantryForFrequent);
+        const infantryExtra = Math.min(infantryCapacity, classDeficit);
+        infantryForFrequent += infantryExtra;
+        classDeficit -= infantryExtra;
+        const cavalryCapacity = Math.max(0, cavalryAvailable - cavalryForFrequent);
+        cavalryForFrequent += Math.min(cavalryCapacity, classDeficit);
+      }
       const classKeys = { Archer: archerKeys, Infantry: infantryKeys, Cavalry: cavalryKeys };
       const perArcher = Math.min(Math.floor(archersAvailable / rallyCount), Math.floor(rallySize * 0.5));
       const perNonArcher = rallySize - perArcher;
-      let perInfantry = Math.min(Math.floor(infantryAvailable / rallyCount), Math.floor(perNonArcher * infantryAvailable / Math.max(1, nonArcherAvailable)));
+      let perInfantry = Math.min(Math.floor(infantryAvailable / rallyCount), Math.floor(perNonArcher * 0.6));
       let perCavalry = perNonArcher - perInfantry;
       if (perCavalry * rallyCount > cavalryAvailable) {
         perCavalry = Math.floor(cavalryAvailable / rallyCount);
